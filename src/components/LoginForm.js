@@ -3,7 +3,8 @@ import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { login } from '../reducers/authReducer'; // Adjust the path as needed
 import '../styles.css';
-import '@trussworks/react-uswds/lib/index.css'; 
+import '@trussworks/react-uswds/lib/index.css';
+import {CognitoUserPool, AuthenticationDetails, CognitoUser} from 'amazon-cognito-identity-js';
 
 const LoginForm = () => {
   const dispatch = useDispatch();
@@ -11,34 +12,34 @@ const LoginForm = () => {
   const [password, setPassword] = useState('');
 
   const handleLogin = async () => {
-    try {
-      // Implement authentication logic using Redux actions and reducers
-      const user = { username, password };
-      console.error('user:', user);
-      // Dispatch the login action
-      dispatch(login(user));
+      var authenticationData = {
+        Username : username,
+        Password : password,
+      };
+      var authenticationDetails = new AuthenticationDetails(authenticationData);
+      var poolData = {
+        UserPoolId : 'us-east-1_vIjf6FkGW',
+        ClientId : '1rudt9curt3kqmnon6njks18ge'
+      };
 
-      // Make the API request to your authentication endpoint
-      const response = await fetch('YOUR_AUTH_ENDPOINT', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
+      var userPool = new CognitoUserPool(poolData);
+      var userData = {
+        Username : username,
+        Pool : userPool
+      };
+      var cognitoUser = new CognitoUser(userData);
+      cognitoUser.authenticateUser(authenticationDetails, {
+        onSuccess: function (result) {
+          dispatch(login(result.idToken));
         },
-        body: JSON.stringify(user),
+        onFailure: function(err) {
+          alert(err);
+        },
+
       });
 
-      if (!response.ok) {
-        throw new Error('Authentication failed');
-      }
 
-      // Handle the response as needed (e.g., store user data in Redux)
-      const userData = await response.json();
 
-      // Update Redux state or perform any additional actions based on the response
-    } catch (error) {
-      console.error('Login failed:', error.message);
-      // Handle the error (e.g., show an error message to the user)
-    }
   };
 
   return (
