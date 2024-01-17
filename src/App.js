@@ -5,6 +5,8 @@ import '@trussworks/react-uswds/lib/index.css'; // Import USWDS styles
 import { Provider } from 'react-redux';
 import store from './store'; // Adjust the path as needed
 import LoginForm from './components/LoginForm'; // Adjust the path as needed
+import AccountList from './components/AccountList';
+import Example from './components/Example';
 import './styles.css';
 function App() {
   const { isAuthenticated, user} = useSelector((state) => state.auth);
@@ -21,8 +23,9 @@ function App() {
               <p><b>Welcome to Emploment Verification System</b></p>
             </div>
           </div>
-          {isAuthenticated ? <div> <h1>Logged in as {user.payload.email} ({user.payload.name})</h1> </div> : <LoginForm /> }
-
+          {/* {isAuthenticated ? <div> <h1>Logged in as {user.payload.email} ({user.payload.name})</h1> </div> : <LoginForm /> } */}
+          <AccountList />
+          {/* <Example /> */}
         </div>
       </div>
     </Provider>
